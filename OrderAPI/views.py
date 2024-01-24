@@ -34,21 +34,23 @@ class UserOrderViewset(viewsets.ModelViewSet):
             return Response(response_data, status=response_data["status"])
 
         restaurant = cart_objs.first().restaurant
+        offer = None
 
         try:
-            address = UserAddress.objects.get(id=request.data["address"])
+            address = UserAddress.objects.get(user=request.user, id=request.data["address"])
             order_notes = request.data.get("order_notes", None)
             payment_mode = request.data.get("payment_mode", None)
-            offer = None
             if request.data["offer"]:
                 offer = Offer.objects.get(id=request.data["offer"], is_active=True)
 
         except serializers.ValidationError as e:
             errors = {key: value[0] for key, value in e.detail.items()}
             response_data['message'] = errors
+            return Response(response_data, status=response_data["status"])
 
         except Exception as e:
             response_data['message'] = str(e)
+            return Response(response_data, status=response_data["status"])
 
         
         commission_rate_type = 1
