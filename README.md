@@ -1,0 +1,1 @@
+# Django Application Code Snippets
